@@ -1,6 +1,4 @@
 using UnityEngine;
-
-[RequireComponent(typeof(Controller2D))]
 public class Player : MonoBehaviour
 {
     private Vector2 screenBounds;
