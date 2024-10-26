@@ -134,5 +134,4 @@ public class Player : MonoBehaviour
     public void ResetEnd() {
         sliding = false;
     }
-
 }
