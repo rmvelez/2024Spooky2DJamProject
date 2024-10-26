@@ -1,6 +1,7 @@
 using UnityEngine;
 public class Player : MonoBehaviour
 {
+    Rigidbody2D rb;
     private Animator animator;
     private Animator cameraAnimator;
     private Vector2 screenBounds;
@@ -15,6 +16,7 @@ public class Player : MonoBehaviour
 
     void Start() {
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+        rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         cameraAnimator = Camera.main.GetComponent<Animator>();
         facingRight = true;
@@ -63,7 +65,7 @@ public class Player : MonoBehaviour
         SetAnimation(direction);
 
         //computes displacement per frame
-        Vector2 displacement = 0.001f * moveSpeed * direction;
+        Vector2 displacement = 0.01f * moveSpeed * direction;
         playerPos += displacement;
 
         if (!sliding) {
@@ -84,7 +86,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        transform.position = playerPos;
+        rb.MovePosition(playerPos);
     }
 
     void SetAnimation(Vector2 direction) {
