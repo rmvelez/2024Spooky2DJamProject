@@ -3,10 +3,8 @@ public class Player : MonoBehaviour
 {
     private Vector2 screenBounds;
     private Animator animator;
-    //dir: 0 = up, 1 = downl, 2 = left, 3 = right
-    private int dir;
     private bool facingRight;
-    public int moveSpeed = 4;
+    public int moveSpeed = 6;
     public int hunger;
 
     void Start() {
