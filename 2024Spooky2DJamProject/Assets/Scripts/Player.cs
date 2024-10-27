@@ -19,7 +19,6 @@ public class Player : MonoBehaviour
     public int hungerPerSecond = 1;
     private float hungerTickLength;
     private float hungerTime;
-
     void Start() {
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         rb = GetComponent<Rigidbody2D>();
@@ -36,6 +35,9 @@ public class Player : MonoBehaviour
             (AudioClip)Resources.Load("Audio/SFX/Footstep 2")
         };
         facingRight = true;
+        hunger = 100;
+        hungerTickLength = 1f / hungerPerSecond;
+        hungerTime = 0f;
     }
 
     void Update() {
