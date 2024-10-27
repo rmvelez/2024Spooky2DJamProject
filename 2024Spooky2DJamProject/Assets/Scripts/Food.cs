@@ -5,7 +5,7 @@ using UnityEngine;
 public class Food : MonoBehaviour
 {
     private bool alive;
-    public int value = 2;
+    public int value = 5;
     private AudioSource audioPlayer;
     void Start() {
         alive = true;
@@ -24,7 +24,7 @@ public class Food : MonoBehaviour
             gameObject.SetActive(false);
             alive = false;
             var player = GameObject.FindWithTag("Player").GetComponent<Player>();
-            player.hunger += value;
+            player.AddHunger(value);
         }
     }
 }

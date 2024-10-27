@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BlackScreen
   - SFX
+  - HungerBar
   layers:
   - Default
   - TransparentFX
@@ -51,4 +52,7 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 2438662205
+    locked: 0
+  - name: UI 2
+    uniqueID: 912531977
     locked: 0
