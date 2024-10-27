@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
     private float hungerTime;
     private float creepyLength;
     private float creepyTime;
-
     void Start() {
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         rb = GetComponent<Rigidbody2D>();
@@ -43,6 +42,9 @@ public class Player : MonoBehaviour
         };
         creepyLength = 30f;
         facingRight = true;
+        hunger = 100;
+        hungerTickLength = 1f / hungerPerSecond;
+        hungerTime = 0f;
     }
     void Update() {
         if (hungerTime >= hungerTickLength) {
