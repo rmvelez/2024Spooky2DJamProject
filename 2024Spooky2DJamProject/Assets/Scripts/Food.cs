@@ -8,7 +8,7 @@ public class Food : MonoBehaviour
     public int value = 5;
     private AudioSource audioPlayer;
     void Start() {
-        value = 5;
+        value = 7;
         alive = true;
         audioPlayer = GameObject.FindWithTag("SFX").GetComponent<AudioSource>();
     }

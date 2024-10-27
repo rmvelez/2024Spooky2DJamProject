@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0458a445a6b5a1743aa05e8609c3d333
+guid: f23ca233e00e17c40b5ede12f35d070e
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,34 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: hungerBar
+      name: Play Again
       rect:
         serializedVersion: 2
-        x: 282
-        y: 220
-        width: 254
-        height: 76
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 1, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bed7b0acc70783e4ea6b389e717e3ed9
-      internalID: 1538199442
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Play
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 216
-        width: 200
-        height: 72
+        x: 0
+        y: 192
+        width: 400
+        height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -132,20 +111,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b0d67f195c77f4c4dab800f29263da50
-      internalID: -1725754998
+      spriteID: 70a955e1c02816143a2059e189044461
+      internalID: 1286853552
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Back
+      name: Instructions
       rect:
         serializedVersion: 2
-        x: 32
-        y: 124
-        width: 200
-        height: 72
+        x: 0
+        y: 0
+        width: 400
+        height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,29 +132,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dd0dba53b5a3eb048bceedee7d9523b7
-      internalID: -383188211
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Credits
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 28
-        width: 200
-        height: 72
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 46db16510f2994940b4e4e8d50214931
-      internalID: -1993837359
+      spriteID: cdcb513908979774abed21f02256fb75
+      internalID: 1224872044
       vertices: []
       indices: 
       edges: []
@@ -191,10 +149,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Back: -383188211
-      Credits: -1993837359
-      Play: -1725754998
-      hungerBar: 1538199442
+      Instructions: 1224872044
+      Play Again: 1286853552
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
