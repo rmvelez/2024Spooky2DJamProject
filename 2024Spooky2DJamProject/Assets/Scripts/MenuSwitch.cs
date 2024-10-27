@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuSwitch : MonoBehaviour
 {
@@ -12,6 +13,11 @@ public class MenuSwitch : MonoBehaviour
     void Start()
     {
         ShowScreen(menu);
+    }
+
+    public void PlayGame()
+    {
+        SceneManager.LoadScene("Scene1");
     }
 
     public void HowToPlay()
