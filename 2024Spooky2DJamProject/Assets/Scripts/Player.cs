@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
-    Rigidbody2D rb;
+    private Rigidbody2D rb;
     private Animator animator;
     private Animator cameraAnimator;
+    private AudioSource audioPlayer;
+    private AudioClip[] clips;
     private Vector2 screenBounds;
     private string[] directions = {"Up", "Right", "Right", "Down", "Right", "Up", "Up", "Right", "Up", "Up"};
     private int currScene = 0;
@@ -12,17 +15,40 @@ public class Player : MonoBehaviour
     private string transitionDir;
 
     public int moveSpeed = 6;
-    public int hunger;
+    public int hunger = 100;
+    public int hungerPerSecond = 1;
+    private float hungerTickLength;
+    private float hungerTime;
 
     void Start() {
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         cameraAnimator = Camera.main.GetComponent<Animator>();
+        audioPlayer = GameObject.FindWithTag("SFX").GetComponent<AudioSource>();
+        hunger = 100;
+        hungerTickLength = 1f / hungerPerSecond;
+        hungerTime = 0f;
+        clips = new AudioClip[]{
+            (AudioClip)Resources.Load("Audio/SFX/Correct Path"),
+            (AudioClip)Resources.Load("Audio/SFX/Wrong Path"),
+            (AudioClip)Resources.Load("Audio/SFX/Footstep 1"),
+            (AudioClip)Resources.Load("Audio/SFX/Footstep 2")
+        };
         facingRight = true;
     }
 
     void Update() {
+        if (hungerTime >= hungerTickLength) {
+            hunger -= 1;
+            hungerTime = 0f;
+            if (hunger == 0) {
+                SceneManager.LoadScene("LoseScene");
+            }
+        } else {
+            hungerTime += Time.deltaTime;
+        }
+
         Vector2 playerPos = transform.position;
 
         Vector2 direction = new(0,0);
@@ -97,11 +123,16 @@ public class Player : MonoBehaviour
     }
 
     void SceneChange(string dir) {
+        if (currScene == 9) {
+            SceneManager.LoadScene("WinScene");
+        }
         sliding = true;
         transitionDir = dir;
         if (dir == directions[currScene]) {
+            audioPlayer.PlayOneShot(clips[0]);
             cameraAnimator.SetTrigger("Slide" + dir);
         } else {
+            audioPlayer.PlayOneShot(clips[1]);
             var blackScreen = GameObject.FindWithTag("BlackScreen").GetComponent<BlackScreen>();
             blackScreen.Reset();
         }
@@ -129,11 +160,13 @@ public class Player : MonoBehaviour
             newPos.y -= camSize;
         }
         transform.position = newPos;
-        //sliding = false;
-        //transform.position = new(screenBounds.x - camSize, screenBounds.y - camSize);
     }
 
     public void ResetEnd() {
         sliding = false;
+    }
+
+    public void Footstep(int num) {
+        audioPlayer.PlayOneShot(clips[1 + num]);
     }
 }
