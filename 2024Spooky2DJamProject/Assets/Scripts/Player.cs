@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     Rigidbody2D rb;
@@ -13,16 +14,31 @@ public class Player : MonoBehaviour
 
     public int moveSpeed = 6;
     public int hunger;
-
+    public int hungerPerSecond = 1;
+    private float hungerTickLength;
+    private float hungerTime;
     void Start() {
         screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         cameraAnimator = Camera.main.GetComponent<Animator>();
         facingRight = true;
+        hunger = 100;
+        hungerTickLength = 1f / hungerPerSecond;
+        hungerTime = 0f;
     }
 
     void Update() {
+        if (hungerTime >= hungerTickLength) {
+            hunger -= 1;
+            hungerTime = 0f;
+            if (hunger == 0) {
+                SceneManager.LoadScene("LoseScene");
+            }
+        } else {
+            hungerTime += Time.deltaTime;
+        }
+
         Vector2 playerPos = transform.position;
 
         Vector2 direction = new(0,0);
@@ -97,6 +113,9 @@ public class Player : MonoBehaviour
     }
 
     void SceneChange(string dir) {
+        if (currScene == 9) {
+            SceneManager.LoadScene("WinScene");
+        }
         sliding = true;
         transitionDir = dir;
         if (dir == directions[currScene]) {
