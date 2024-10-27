@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
 
     public int moveSpeed = 6;
     public int hunger = 100;
-    public int hungerPerSecond = 2;
+    public float hungerPerSecond = 0.8f;
     private float hungerTickLength;
     private float hungerTime;
     private float creepyLength;
@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
         audioPlayer = GameObject.FindWithTag("SFX").GetComponent<AudioSource>();
         hungerBar = GameObject.FindWithTag("HungerBar").GetComponent<Slider>();
         hunger = 100;
+        hungerPerSecond = 0.8f;
         hungerTickLength = 1f / hungerPerSecond;
         hungerTime = 0f;
         clips = new AudioClip[]{
@@ -58,7 +59,7 @@ public class Player : MonoBehaviour
             hungerTime += Time.deltaTime;
         }
         if (creepyTime >= creepyLength) {
-            audioPlayer.PlayOneShot(clips[4]);
+            //audioPlayer.PlayOneShot(clips[4]);
         } else {
             creepyTime += Time.deltaTime;
         }
@@ -138,15 +139,19 @@ public class Player : MonoBehaviour
     }
 
     void SceneChange(string dir) {
-        if (currScene == 9) {
-            SceneManager.LoadScene("WinScene");
-        }
         sliding = true;
         transitionDir = dir;
         if (dir == directions[currScene]) {
+            if (currScene == 9) {
+                SceneManager.LoadScene("WinScene");
+            }
             audioPlayer.PlayOneShot(clips[0]);
             cameraAnimator.SetTrigger("Slide" + dir);
+            Darkness darkness = GameObject.Find("Darkness").GetComponent<Darkness>();
+            darkness.Darken();
         } else {
+            hunger -= 5;
+            hungerBar.value -= 0.05f;
             audioPlayer.PlayOneShot(clips[1]);
             var blackScreen = GameObject.FindWithTag("BlackScreen").GetComponent<BlackScreen>();
             blackScreen.Reset();
