@@ -5,7 +5,8 @@ using UnityEngine;
 public class SceneTraversal : MonoBehaviour
 {
     void Start() {
-        Screen.SetResolution(1080, 1080, true);
+        Screen.SetResolution(640, 640, false);
+        //Camera.main.aspect = 1;
     }
 
     public void SlideEnd() {
