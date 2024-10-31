@@ -15,10 +15,10 @@ public class BlackScreen : MonoBehaviour
         animator.SetTrigger("FadeOut");
     }
 
-    public void FadeOutOver() {
-        animator.SetTrigger("FadeIn");
-        player.ResetPosition();
-    }
+    // public void FadeOutOver() {
+    //     animator.SetTrigger("FadeIn");
+    //     player.ResetPosition();
+    // }
 
     public void FadeInOver() {
         player.ResetEnd();

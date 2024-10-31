@@ -9,8 +9,10 @@ public class Player : MonoBehaviour
     private AudioSource audioPlayer;
     private Slider hungerBar;
     private AudioClip[] clips;
-    private Vector2 screenBounds;
+    private Vector2 screenCenter;
+    private GameObject dupeScene;
     private string[] directions = {"Up", "Right", "Right", "Down", "Right", "Up", "Up", "Right", "Up", "Up"};
+    private GameObject screens;
     private int currScene = 0;
     private bool facingRight;
     private bool sliding;
@@ -23,8 +25,19 @@ public class Player : MonoBehaviour
     private float hungerTime;
     private float creepyLength;
     private float creepyTime;
+    private float screenSize = 5;
+    private bool wrongWayReset;
+    private GameObject[] scenes;
     void Start() {
-        screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+        scenes = new GameObject[10];
+        for (int i = 0; i < 10; i++) {
+            scenes[i] = GameObject.Find("Scene " + (i+1));
+            if (i > 0) {
+                scenes[i].SetActive(false);
+            }
+        }
+        screens = GameObject.Find("Screens");
+        screenCenter = new(0,0);
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         cameraAnimator = Camera.main.GetComponent<Animator>();
@@ -34,6 +47,8 @@ public class Player : MonoBehaviour
         hungerPerSecond = 1.5f;
         hungerTickLength = 1f / hungerPerSecond;
         hungerTime = 0f;
+        screenSize = 5;
+        wrongWayReset = false;
         clips = new AudioClip[]{
             (AudioClip)Resources.Load("Audio/SFX/Correct Path"),
             (AudioClip)Resources.Load("Audio/SFX/Wrong Path"),
@@ -48,6 +63,13 @@ public class Player : MonoBehaviour
         hungerTime = 0f;
     }
     void Update() {
+        if (wrongWayReset) { //FIX THIS
+            Vector3 dir = DirToVect(transitionDir) * 10;
+            transform.position -= dir;
+            Camera.main.transform.position -= dir;
+            Destroy(dupeScene);
+            wrongWayReset = false;
+        }
         if (hungerTime >= hungerTickLength) {
             hunger -= 1;
             hungerBar.value -= 0.01f;
@@ -111,20 +133,19 @@ public class Player : MonoBehaviour
         playerPos += displacement;
 
         if (!sliding) {
-            var camSize = Camera.main.orthographicSize;
             //boundary checks for screen transition
-            if (playerPos.x <= screenBounds.x - camSize * 2f) {
+            if (playerPos.x <= screenCenter.x - screenSize) {
                 SceneChange("Left");
-            } else if (playerPos.x >= screenBounds.x) {
+            } else if (playerPos.x >= screenCenter.x + screenSize) {
                 SceneChange("Right");
-            } else if (playerPos.y <= screenBounds.y - camSize * 2f) {
+            } else if (playerPos.y <= screenCenter.y - screenSize) {
                 SceneChange("Down");
-            } else if (playerPos.y >= screenBounds.y) {
+            } else if (playerPos.y >= screenCenter.y + screenSize) {
                 SceneChange("Up");
             } else {
                 //keep player within screen bounds
-                playerPos.x = Mathf.Clamp(playerPos.x, -1 * screenBounds.x, screenBounds.x);
-                playerPos.y = Mathf.Clamp(playerPos.y, -1 * screenBounds.y, screenBounds.y);
+                playerPos.x = Mathf.Clamp(playerPos.x, screenCenter.x - screenSize, screenCenter.x + screenSize);
+                playerPos.y = Mathf.Clamp(playerPos.y, -1 * screenCenter.y - screenSize, screenCenter.y + screenSize);
             }
         }
 
@@ -145,6 +166,7 @@ public class Player : MonoBehaviour
             if (currScene == 9) {
                 SceneManager.LoadScene("WinScene");
             } else {
+                scenes[currScene + 1].SetActive(true);
                 audioPlayer.PlayOneShot(clips[0]);
                 cameraAnimator.SetTrigger("Slide" + dir);
                 Darkness darkness = GameObject.Find("Darkness").GetComponent<Darkness>();
@@ -154,34 +176,39 @@ public class Player : MonoBehaviour
             hunger -= 5;
             hungerBar.value -= 0.05f;
             audioPlayer.PlayOneShot(clips[1]);
-            var blackScreen = GameObject.FindWithTag("BlackScreen").GetComponent<BlackScreen>();
-            blackScreen.Reset();
+            dupeScene = Instantiate(scenes[currScene], GameObject.Find("Screens").transform); //move to global
+            dupeScene.transform.position = screenCenter + DirToVect(transitionDir) * 10;
+            cameraAnimator.SetTrigger("Slide" + dir);
         }
     }
 
     public void SlideEnd() {
-        cameraAnimator.SetTrigger("Idle");
-        screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+        cameraAnimator.SetTrigger("Idle"); //is this necessary?
+        if (dupeScene) {
+            wrongWayReset = true;
+        } else {
+            scenes[currScene].SetActive(false);
+            screenCenter += DirToVect(transitionDir) * 10;
+            currScene++;
+        }
         sliding = false;
-        currScene++;
     }
 
-    public void ResetPosition() {
-        var camSize = Camera.main.orthographicSize;
-        Vector2 newPos = screenBounds;
-        if (transitionDir == "Up") {
-            newPos.x -= camSize;
-            newPos.y -= camSize * 2f;
-        } else if (transitionDir == "Down") {
-            newPos.x -= camSize;
-        } else if (transitionDir == "Left") {
-            newPos.y -= camSize;
-        } else {
-            newPos.x -= camSize * 2f;
-            newPos.y -= camSize;
-        }
-        transform.position = newPos;
-    }
+    // public void ResetPosition() {
+    //     Vector2 newPos = screenBounds;
+    //     if (transitionDir == "Up") {
+    //         newPos.x -= screenSize;
+    //         newPos.y -= screenSize * 2f;
+    //     } else if (transitionDir == "Down") {
+    //         newPos.x -= screenSize;
+    //     } else if (transitionDir == "Left") {
+    //         newPos.y -= screenSize;
+    //     } else {
+    //         newPos.x -= screenSize * 2f;
+    //         newPos.y -= screenSize;
+    //     }
+    //     transform.position = newPos;
+    // }
 
     public void ResetEnd() {
         sliding = false;
@@ -194,5 +221,17 @@ public class Player : MonoBehaviour
     public void AddHunger(int amount) {
         hunger += amount;
         hungerBar.value += amount * 0.01f;
+    }
+
+    public Vector2 DirToVect(string dir) {
+        if (dir == "Up") {
+            return new(0,1);
+        } else if (dir == "Down") {
+            return new(0,-1);
+        } else if (dir == "Right") {
+            return new(1,0);
+        } else {
+            return new(-1,0);
+        }
     }
 }
