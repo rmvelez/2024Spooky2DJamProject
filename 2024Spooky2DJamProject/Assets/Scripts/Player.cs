@@ -9,7 +9,8 @@ public class Player : MonoBehaviour
     private AudioSource audioPlayer;
     private Slider hungerBar;
     private AudioClip[] clips;
-    private Vector2 screenBounds;
+    private Vector2 screenCenter;
+    private int screenSize;
     private string[] directions = {"Up", "Right", "Right", "Down", "Right", "Up", "Up", "Right", "Up", "Up"};
     private int currScene = 0;
     private bool facingRight;
@@ -24,7 +25,8 @@ public class Player : MonoBehaviour
     private float creepyLength;
     private float creepyTime;
     void Start() {
-        screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+        screenCenter = new(0,0);
+        screenSize = 5;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         cameraAnimator = Camera.main.GetComponent<Animator>();
@@ -111,20 +113,19 @@ public class Player : MonoBehaviour
         playerPos += displacement;
 
         if (!sliding) {
-            var camSize = Camera.main.orthographicSize;
             //boundary checks for screen transition
-            if (playerPos.x <= screenBounds.x - camSize * 2f) {
+            if (playerPos.x <= screenCenter.x - screenSize) {
                 SceneChange("Left");
-            } else if (playerPos.x >= screenBounds.x) {
+            } else if (playerPos.x >= screenCenter.x + screenSize) {
                 SceneChange("Right");
-            } else if (playerPos.y <= screenBounds.y - camSize * 2f) {
+            } else if (playerPos.y <= screenCenter.y - screenSize) {
                 SceneChange("Down");
-            } else if (playerPos.y >= screenBounds.y) {
+            } else if (playerPos.y >= screenCenter.y + screenSize) {
                 SceneChange("Up");
             } else {
                 //keep player within screen bounds
-                playerPos.x = Mathf.Clamp(playerPos.x, -1 * screenBounds.x, screenBounds.x);
-                playerPos.y = Mathf.Clamp(playerPos.y, -1 * screenBounds.y, screenBounds.y);
+                playerPos.x = Mathf.Clamp(playerPos.x, screenCenter.x - screenSize, screenCenter.x + screenSize);
+                playerPos.y = Mathf.Clamp(playerPos.y, -1 * screenCenter.y - screenSize, screenCenter.y + screenSize);
             }
         }
 
@@ -161,26 +162,35 @@ public class Player : MonoBehaviour
 
     public void SlideEnd() {
         cameraAnimator.SetTrigger("Idle");
-        screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+        screenCenter += DirToVect(directions[currScene]) * 10;
         sliding = false;
         currScene++;
     }
 
     public void ResetPosition() {
-        var camSize = Camera.main.orthographicSize;
-        Vector2 newPos = screenBounds;
+        Vector2 newPos = screenCenter;
         if (transitionDir == "Up") {
-            newPos.x -= camSize;
-            newPos.y -= camSize * 2f;
+            newPos.y -= screenSize;
         } else if (transitionDir == "Down") {
-            newPos.x -= camSize;
+            newPos.y += screenSize;
         } else if (transitionDir == "Left") {
-            newPos.y -= camSize;
+            newPos.x += screenSize;
         } else {
-            newPos.x -= camSize * 2f;
-            newPos.y -= camSize;
+            newPos.x -= screenSize;
         }
         transform.position = newPos;
+    }
+
+    public Vector2 DirToVect(string dir) {
+        if (dir == "Up") {
+            return new(0,1);
+        } else if (dir == "Down") {
+            return new(0,-1);
+        } else if (dir == "Right") {
+            return new(1,0);
+        } else {
+            return new(-1,0);
+        }
     }
 
     public void ResetEnd() {
